@@ -9,6 +9,7 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
+// firebase.js에서 설정한 인증서비스를 import 해와야 인증서버에 접근할 수 있음
 import { authService } from "../../firebase";
 // watch 함수 => watch('name')
 //<유효성 검사할 태그 {...register('해당 태그 이름을 정해준다', {유효성 검사할 항목})}
@@ -44,14 +45,15 @@ function RegisterPage() {
     try {
       setSubmitStop(true);
       const auth = getAuth(); //인증 서비스 접근
+      // 인증 서버에 접근해서 회원 가입 진행 해당 정보를 데이터 베이스에도 전달해야함.
       let createdUser = await createUserWithEmailAndPassword(
         //유저를 이메일과 패스워드로 생성
         auth,
         data.email,
         data.password
       ); // 회원가입 정보를 기입하는 auth서버에 접근해서 해당 정보를 저장, 저장된 정보를 createdUser가 가지고 있음
-      // createdUser은 객체형태이며, user라는 키 값에 accessToken, displayName,protoUrl을 가지고 있음
 
+      // createdUser은 객체형태이며, user라는 키 값에 accessToken, displayName,protoUrl을 가지고 있음
       await updateProfile(auth.currentUser, {
         // 유저 정보를 업데이트 해주는 메소드 1인자 : auth.currentUser 회원가입한 현재 유저?, 2인자 수정할 정보 객체로 기재
         displayName: data.name,
@@ -59,7 +61,27 @@ function RegisterPage() {
           createdUser.user.email
         )}?d=identicon`,
       });
-      console.log(createdUser);
+      // console.log(createdUser); 생성된 유저 데이터를 displayname. photoURL을 수정할 수 있음
+
+      // 데이터 베이스에 인증된 데이터 전달하기
+      const dataBase = getDatabase(); //데이터 베이스의 접근하기
+      // ref는 reference => dataBase, table, row 순
+      /*  database 구조
+        // 데이터 베이스 database { 
+          // table - users : {
+           // row - uid(회원 고유 아이디) : { 
+              //column -  displayname : 
+                          email : 
+            } ...회원 가입 아이디 저장
+          }
+        }
+      */
+      //ref 는 데이터 베이스 주소라고 생각하면 될듯?
+      // set(ref(데이터베이스, 테이블 + row) , {Column 정보})
+      await set(ref(dataBase, "users/" + createdUser.user.uid), {
+        name: createdUser.user.displayName,
+        image: createdUser.user.photoURL,
+      });
 
       setSubmitStop(false);
     } catch (error) {
