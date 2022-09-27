@@ -11,6 +11,7 @@ import {
 } from "firebase/auth";
 // firebase.js에서 설정한 인증서비스를 import 해와야 인증서버에 접근할 수 있음
 import { authService } from "../../firebase";
+
 // watch 함수 => watch('name')
 //<유효성 검사할 태그 {...register('해당 태그 이름을 정해준다', {유효성 검사할 항목})}
 //{유효성 검사할 항목}
@@ -25,7 +26,7 @@ function RegisterPage() {
     watch,
     formState: { errors },
   } = useForm({ mode: "onChange" }); // { mode : 'onChange' }change가 일어날때 마다 유효성 검사를 시작함
-
+  console.log(watch("email"));
   const [errorFromSubmit, setErrorFromSubmit] = useState("");
   //회원가입이 진행중일 땐 회원가입 버튼을 막아야함.
   const [submitStop, setSubmitStop] = useState(false);
@@ -38,10 +39,12 @@ function RegisterPage() {
 
   const onSubmit = async (data) => {
     //handleSubmit으로 인해 해당 함수 data에 form 안에 있는 태그들의 value가 객체 형태로 전달된다
-    // data = {email: 'asd@na.com',  //data에 키값들은 register로 지정한 해당 태그의 이름이다.
+    // data =
+    // {email: 'asd@na.com',  //data에 키값들은 register로 지정한 해당 태그의 이름이다.
     // name: 'asdasda',
     // password: 'asdasdf',
-    // passwordConfirm: 'asdasdf'}
+    // passwordConfirm: 'asdasdf'
+    // }
     try {
       setSubmitStop(true);
       const auth = getAuth(); //인증 서비스 접근
@@ -75,7 +78,8 @@ function RegisterPage() {
             } ...회원 가입 아이디 저장
           }
         }
-      */
+      
+        */
       //ref 는 데이터 베이스 주소라고 생각하면 될듯?
       // set(ref(데이터베이스, 테이블 + row) , {Column 정보})
       await set(ref(dataBase, "users/" + createdUser.user.uid), {
