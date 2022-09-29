@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { authService } from "../../firebase";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 function LoginPage() {
   const [submit, setSubmit] = useState(false);
@@ -11,9 +11,8 @@ function LoginPage() {
     setSubmit(true); // 제출 버튼 눌렸다면 버튼 사용불가
     try {
       // auth 서버에 접근해서 이메일과 비밀번호를 확인 해당 정보를 loginUser에 넣어줌
-      const auth = getAuth();
       let loginUser = await signInWithEmailAndPassword(
-        auth,
+        authService,
         data.email,
         data.password
       );
