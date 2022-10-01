@@ -6,6 +6,8 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/storage"; // 스토리지 불러오기
 import { getDatabase } from "firebase/database";
 import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -27,5 +29,6 @@ const app = firebase.initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app); 통계를 보여주는 부분
 
 //auth auth와 database를 받아온 다음에 export 해줘야 함.
-export const authService = getAuth();
-export const database = getDatabase();
+export const authService = getAuth(app);
+export const database = getDatabase(app);
+export const storage = getStorage(app);

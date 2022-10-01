@@ -10,7 +10,7 @@ import { authService } from "./firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useDispatch, useSelector } from "react-redux";
 
-import { setUser } from "./redux/actions/user_actions";
+import { setUser, clearUser } from "./redux/actions/user_actions";
 
 function App() {
   // 경로 이동 메서드 BrowserRouter와 같은 경로이면 안됨 , BrowserRouter를 최상위에다가 배치할 것.
@@ -21,8 +21,8 @@ function App() {
   // 근데 회원가입 했을 때도 해당 user가 반응한다? , []로 줬는데 로그인할 때도 반응한다?
   useEffect(() => {
     onAuthStateChanged(authService, (user) => {
-      //user에 정보가 있으면 로그인 된 상태
-      console.log(user);
+      // user에 정보가 있으면 로그인 된 상태
+
       if (user) {
         //로그인 페이지에서 채팅 페이지로 이동해야함
         navigate("/"); // chatpage로 이동
@@ -30,6 +30,7 @@ function App() {
         dispatch(setUser(user));
       } else {
         navigate("/login");
+        dispatch(clearUser());
       }
     });
   }, []);

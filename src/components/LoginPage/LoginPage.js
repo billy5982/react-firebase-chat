@@ -27,11 +27,13 @@ function LoginPage() {
       }, 5000);
     }
   };
+
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm({ mode: onchange });
+
   return (
     <div className="auth-wrapper">
       <h3 style={{ fontSize: "30px" }}>Login</h3>
