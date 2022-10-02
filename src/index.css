@@ -11,7 +11,20 @@ body {
   align-items: center;
   justify-content: center;
 }
-
+.message-form-button {
+  background: #7a84eb;
+  color: white;
+  text-transform: uppercase;
+  border: none;
+  margin-top: 40px;
+  padding: 20px;
+  font-size: 16px;
+  font-weight: 100;
+  letter-spacing: 10px;
+}
+.message-form-button:hover {
+  background-color: #252e94;
+}
 .auth-wrapper form {
   min-width: 375px;
   margin: 0 auto;
