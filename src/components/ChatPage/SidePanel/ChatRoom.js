@@ -12,14 +12,14 @@ import {
   getDatabase,
   ref,
   push,
-  set,
   onChildAdded,
   update,
   child,
-  DataSnapshot,
-  remove,
 } from "firebase/database";
-import { setCurrentChatRoom } from "../../../redux/actions/chatRoom_actions";
+import {
+  setCurrentChatRoom,
+  setPrivateChatRoom,
+} from "../../../redux/actions/chatRoom_actions";
 import { async } from "@firebase/util";
 import { useEffect } from "react";
 const ChatRoomUIComponent = styled.div`
@@ -132,6 +132,7 @@ function ChatRoom() {
   // mainpannel에서 해당 방에 대한 정보를 뿌려줘야 함.
   const changeChatRoom = (room) => {
     dispatch(setCurrentChatRoom(room));
+    dispatch(setPrivateChatRoom(false));
     // 클릭한 room의 아이디로
     setActiveChatRoomId(room.id);
   };

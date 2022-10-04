@@ -2,7 +2,7 @@ import React from "react";
 import { Container as Con } from "../../styled/Container";
 import Container from "react-bootstrap/Container";
 
-import { FaLock } from "react-icons/fa";
+import { FaLock, FaLockOpen } from "react-icons/fa";
 import { BsSearch } from "react-icons/bs";
 
 import Image from "react-bootstrap/Image";
@@ -14,8 +14,16 @@ import InputGroup from "react-bootstrap/InputGroup";
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
+import { useDispatch, useSelector } from "react-redux";
 
-function MessageHeader() {
+function MessageHeader({ handleSearchChange }) {
+  const chatRoom = useSelector((state) => state.chatRoom.currentChatRoom);
+  const user = useSelector((state) => state.user.currentUser);
+  const isPrivateChatRoom = useSelector(
+    (state) => state.chatRoom.isPrivateChatRoom
+  );
+
+  console.log(user);
   return (
     <Con
       width="100%"
@@ -29,7 +37,12 @@ function MessageHeader() {
         <Row>
           <Col>
             <h2>
-              <FaLock /> ChatRoomName
+              {isPrivateChatRoom ? (
+                <FaLock style={{ marginBottom: "10px" }} />
+              ) : (
+                <FaLockOpen style={{ marginBottom: "10px" }} />
+              )}{" "}
+              {chatRoom.name}
             </h2>
           </Col>
           <Col>
@@ -38,6 +51,7 @@ function MessageHeader() {
                 <BsSearch />
               </InputGroup.Text>
               <Form.Control
+                onChange={handleSearchChange}
                 placeholder="Search Messages"
                 aria-label="Search"
                 aria-describedby="basic-addon1"
@@ -47,8 +61,8 @@ function MessageHeader() {
         </Row>
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <p>
-            <Image src="" />
-            userName
+            <Image src={`${user.photoURL}`} />
+            {user.displayName}
           </p>
         </div>
         <Row>
