@@ -56,7 +56,7 @@ function RegisterPage() {
       await updateProfile(authService.currentUser, {
         // 유저 정보를 업데이트 해주는 메소드 1인자 : auth.currentUser 회원가입한 현재 유저?, 2인자 수정할 정보 객체로 기재
         displayName: data.name,
-        photoURL: `http:gravatar.com/avatar/${md5(
+        photoURL: `http://gravatar.com/avatar/${md5(
           createdUser.user.email
         )}?d=identicon`,
       });
