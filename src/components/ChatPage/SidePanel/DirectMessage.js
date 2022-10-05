@@ -12,6 +12,7 @@ function DirectMessage() {
   const myName = useSelector((state) => state.user.currentUser.uid);
   const [activeChatRoom, setActiveChatRoom] = useState("");
   const dispatch = useDispatch();
+
   const addUsersListener = () => {
     let usersArray = [];
     onChildAdded(userRef, (data) => {
