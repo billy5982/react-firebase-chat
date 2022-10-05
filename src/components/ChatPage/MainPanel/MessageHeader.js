@@ -23,7 +23,6 @@ function MessageHeader({ handleSearchChange }) {
     (state) => state.chatRoom.isPrivateChatRoom
   );
 
-  console.log(user);
   return (
     <Con
       width="100%"
@@ -61,7 +60,7 @@ function MessageHeader({ handleSearchChange }) {
         </Row>
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <p>
-            <Image src={`${user.photoURL}`} />
+            <Image src={`${user.photoURL}`} style={{ width: "30px" }} />
             {user.displayName}
           </p>
         </div>
