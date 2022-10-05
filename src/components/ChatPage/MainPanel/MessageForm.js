@@ -123,7 +123,6 @@ function MessageForm() {
         () => {
           // 다운로드 url을 가져올 수 있음. 해당 리턴값을 then을 이용해서 url을 받아서 dataBase에 해당 메세지를 저장
           getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
-            console.log(downloadUrl);
             set(
               push(child(messagesRef, chatRoom.id)),
               createMessage(downloadUrl)
