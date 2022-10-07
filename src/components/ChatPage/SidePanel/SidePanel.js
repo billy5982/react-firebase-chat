@@ -14,7 +14,7 @@ import { Container } from "../../styled/Container";
 //   min-width: 275px;
 // `;
 
-function SidePanel() {
+function SidePanel({ heart, setHeart }) {
   return (
     <Container
       backgroundC="#7b83eb"
@@ -24,7 +24,7 @@ function SidePanel() {
       color="white"
     >
       <UserPanel />
-      <Favorited />
+      <Favorited heart={heart} setHeart={setHeart} />
       <ChatRoom />
       <DirectMessage />
     </Container>

@@ -12,6 +12,7 @@ function DirectMessage() {
   const myName = useSelector((state) => state.user.currentUser.uid);
   const [activeChatRoom, setActiveChatRoom] = useState("");
   const dispatch = useDispatch();
+  const chatRoom = useSelector((state) => state.chatRoom.currentChatRoom);
 
   const addUsersListener = () => {
     let usersArray = [];
@@ -45,7 +46,7 @@ function DirectMessage() {
     };
     dispatch(setCurrentChatRoom(chatRoomData));
     dispatch(setPrivateChatRoom(true));
-    setActiveChatRoom(user.uid);
+    setActiveChatRoom(chatRoomId);
   };
 
   useEffect(() => {
@@ -67,7 +68,8 @@ function DirectMessage() {
               return (
                 <li
                   style={{
-                    backgroundColor: user.uid === activeChatRoom && "#ffff45",
+                    backgroundColor:
+                      chatRoom.id === activeChatRoom && "#ffff45",
                   }}
                   key={user.uid}
                   onClick={() => {

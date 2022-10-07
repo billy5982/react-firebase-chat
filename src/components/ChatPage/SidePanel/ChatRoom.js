@@ -22,7 +22,7 @@ import {
   setCurrentChatRoom,
   setPrivateChatRoom,
 } from "../../../redux/actions/chatRoom_actions";
-import { async } from "@firebase/util";
+
 import { useEffect } from "react";
 
 const ChatRoomUIComponent = styled.div`
@@ -36,10 +36,11 @@ function ChatRoom() {
   const [show, setShow] = useState(false);
   const user = useSelector((state) => state.user.currentUser);
   const chatRoom = useSelector((state) => state.chatRoom.currentChatRoom);
+
   const dispatch = useDispatch();
   const [chatRooms, setChatRooms] = useState([]);
   const [firstChatRoom, setFirstChatRoom] = useState(true);
-  const [notifications, setNotifications] = useState([]);
+  // const [notifications, setNotifications] = useState([]);
   //선택된 아이디의 효과를 주기 위한 상태관리
   const [activeChatRoomId, setActiveChatRoomId] = useState("");
   // chatRoom 테이블의 주소를 가져오는것 ? 들을 가져오는 것?
@@ -107,79 +108,72 @@ function ChatRoom() {
     }
   };
 
-  const handleNotification = (
-    chatRoomId,
-    currentChatRoomId,
-    notifications,
-    DataSnapshot
-  ) => {
-    let lastTotal = 0;
-    //이미 notifications state 안에 알림 정보가 들어있는 채팅방과 그렇지 않은 채팅방을 나눠주기
+  // 알림 설정 로직
+  // const handleNotification = (
+  //   chatRoomId,
+  //   currentChatRoomId,
+  //   notifications,
+  //   DataSnapshot
+  // ) => {
+  //   let lastTotal = 0;
+  //   //이미 notifications state 안에 알림 정보가 들어있는 채팅방과 그렇지 않은 채팅방을 나눠주기
+  //   let result = [...notifications];
+  //   let index = result.findIndex(
+  //     (notification) => notification.id === chatRoomId
+  //   );
+  //   // notifications state 안에 해당 채팅방의 알림 정보가 있는 방과 그렇지 않은 채팅방을 나눠주기
+  //   // id : 채팅방 아이디
+  //   // total : 해당 채팅방 전체 메세지 개수
+  //   // lastKnownTotal : 이전에 확인한 전체 메세지 개수
+  //   // count : 알림으로 사용될 숫자
+  //   // DataSnapshot.numChildren() : 전체 children 개수 전체 메세지 개수?
+  //   // 처음 만들어진 채팅방일 경우엔
+  //   if (index === -1) {
+  //     result.push({
+  //       id: chatRoomId,
+  //       total: DataSnapshot.size,
+  //       lastKnownTotal: DataSnapshot.size,
+  //       count: 0,
+  //     });
+  //   }
+  //   // 이미 해당 채팅방의 알림 정보가 있ㅇ르때
+  //   else {
+  //     //상대방이 채팅 보내는 그 해당 채팅방에 있지 않을 때
+  //     if (chatRoomId !== currentChatRoomId) {
+  //       //현재까지 유저가 확인한 총 메시지 개수
+  //       lastTotal = result[index].lastKnownTotal;
 
-    let index = notifications.findIndex(
-      (notification) => notification.id === chatRoomId
-    );
+  //       //count (알림으로 보여줄 숫자)를 구하기
+  //       //현재 총 메시지 개수 - 이전에 확인한 총 메시지 개수 > 0
+  //       //현재 총 메시지 개수가 10개이고 이전에 확인한 메시지가 8개 였다면 2개를 알림으로 보여줘야함.
+  //       if (DataSnapshot.size - lastTotal > 0) {
+  //         result[index].count = DataSnapshot.size - lastTotal;
+  //       }
+  //     }
+  //     //total property에 현재 전체 메시지 개수를 넣어주기
+  //     result[index].total = DataSnapshot.size;
+  //   }
+  //   setNotifications([...result]);
+  //   // 목표는 방하나하나 마다 Notifications state에다가 넣어주기?
+  // };
 
-    // notifications state 안에 해당 채팅방의 알림 정보가 있는 방과 그렇지 않은 채팅방을 나눠주기
-    // id : 채팅방 아이디
-    // total : 해당 채팅방 전체 메세지 개수
-    // lastKnownTotal : 이전에 확인한 전체 메세지 개수
-    // count : 알림으로 사용될 숫자
-    // DataSnapshot.numChildren() : 전체 children 개수 전체 메세지 개수?
-    // 처음 만들어진 채팅방일 경우엔
+  // const addNotificationListener = (chatRoomId) => {
+  //   // 만들어지는 방들의 value들의 추가값을 확인할 수 있다.
+  //   onValue(child(messagesRef, chatRoomId), (DataSnapshot) => {
+  //     // DataSnapShot은 하나씩 하나씩 들어온다. 현재 chatRoom에 들어와있는 경우
 
-    if (index === -1) {
-      setNotifications([
-        ...notifications,
-        {
-          id: chatRoomId,
-          total: DataSnapshot.size,
-          lastKnownTotal: DataSnapshot.size,
-          count: 0,
-        },
-      ]);
-
-      console.log(chatRoomId, currentChatRoomId);
-    }
-    // 이미 해당 채팅방의 알림 정보가 있ㅇ르때
-    else {
-      //상대방이 채팅 보내는 그 해당 채팅방에 있지 않을 때
-      let result = [...notifications];
-      if (chatRoomId !== currentChatRoomId) {
-        //현재까지 유저가 확인한 총 메시지 개수
-        lastTotal = result[index].lastKnownTotal;
-
-        //count (알림으로 보여줄 숫자)를 구하기
-        //현재 총 메시지 개수 - 이전에 확인한 총 메시지 개수 > 0
-        //현재 총 메시지 개수가 10개이고 이전에 확인한 메시지가 8개 였다면 2개를 알림으로 보여줘야함.
-        if (DataSnapshot.size - lastTotal > 0) {
-          result[index].count = DataSnapshot.size - lastTotal;
-        }
-      }
-      //total property에 현재 전체 메시지 개수를 넣어주기
-      result[index].total = DataSnapshot.size;
-      setNotifications([...notifications, ...result]);
-    }
-    setNotifications([...notifications]);
-    // 목표는 방하나하나 마다 Notifications state에다가 넣어주기?
-  };
-
-  const addNotificationListener = (chatRoomId, chatRoom) => {
-    // 만들어지는 방들의 value들의 추가값을 확인할 수 있다.
-    onValue(child(messagesRef, chatRoomId), (DataSnapshot) => {
-      // DataSnapShot은 하나씩 하나씩 들어온다. 현재 chatRoom에 들어와있는 경우
-      if (chatRoom) {
-        handleNotification(
-          // 해당 chatRoomId에는 실시간으로 만들어지는 방의 id가 들어온다. 만들어져있는 전체 방의 아이디
-          chatRoomId,
-          chatRoom.id,
-          notifications,
-          // 생성되있는 채팅방에 추가되는 데이터들이 dataSnapShot에 존재
-          DataSnapshot
-        );
-      }
-    });
-  };
+  //     if (chatRoom) {
+  //       handleNotification(
+  //         // 해당 chatRoomId에는 실시간으로 만들어지는 방의 id가 들어온다. 만들어져있는 전체 방의 아이디
+  //         chatRoomId,
+  //         chatRoom.id,
+  //         notifications,
+  //         // 생성되있는 채팅방에 추가되는 데이터들이 dataSnapShot에 존재
+  //         DataSnapshot
+  //       );
+  //     }
+  //   });
+  // };
 
   // 방 만든 후 데이터 실시간 업데이트 함수
   const AddChatRoomsListeners = () => {
@@ -200,25 +194,22 @@ function ChatRoom() {
       }
 
       // 알림 설정, 방이 만들어질때마다, 혹은 해당 함수가 렌더링 될떄마다 채팅방의 id를 해당 함수로 보내준다
-      addNotificationListener(data.key, chatRoom);
+      // addNotificationListener(data.key, chatRoom);
     });
   };
 
-  const getNotificationCount = (room) => {
-    let count = 0;
-    notifications.forEach((notification) => {
-      if (notification.id === room.id) {
-        count = notification.count;
-      }
-    });
-    if (count > 0) {
-      return count;
-    }
-  };
+  // const getNotificationCount = (room) => {
+  //   let count = 0;
 
-  useEffect(() => {
-    AddChatRoomsListeners();
-  }, []);
+  //   notifications.forEach((notification) => {
+  //     if (notification.id === room.id) {
+  //       count = notification.count;
+  //     }
+  //   });
+  //   if (count > 0) {
+  //     return count;
+  //   }
+  // };
 
   // 간단한 유효성 검사 해당
   const isFormValid = (nam, des) => nam && des;
@@ -230,7 +221,25 @@ function ChatRoom() {
     dispatch(setPrivateChatRoom(false));
     // 클릭한 room의 아이디로
     setActiveChatRoomId(room.id);
+    // clearNotifications();
   };
+
+  // const clearNotifications = () => {
+  //   let index = notifications.findIndex(
+  //     (notification) => notification.id === chatRoom.id
+  //   );
+
+  //   if (index !== -1) {
+  //     let updatedNotifications = [...notifications];
+  //     updatedNotifications[index].lastKnownTotal = notifications[index].total;
+  //     updatedNotifications[index].count = 0;
+  //     setNotifications(...updatedNotifications);
+  //   }
+  // };
+
+  useEffect(() => {
+    AddChatRoomsListeners();
+  }, []);
 
   return (
     <div>
@@ -243,27 +252,26 @@ function ChatRoom() {
         />
       </ChatRoomUIComponent>
       <ul style={{ listStyleType: "none", padding: 0 }}>
-        {chatRooms.length !== 0
-          ? chatRooms.map((room) => (
-              // 클릭한 정보를 리덕스에다가 넣어줘야함
-              <li
-                onClick={() => changeChatRoom(room)}
-                key={room.id}
-                style={{
-                  backgroundColor: room.id === activeChatRoomId && "#ffffff45",
-                  display: "flex",
-                }}
-              >
-                # {room.name}
-                <Badge
+        {chatRooms &&
+          chatRooms.map((room) => (
+            // 클릭한 정보를 리덕스에다가 넣어줘야함
+            <li
+              onClick={() => changeChatRoom(room)}
+              key={room.id}
+              style={{
+                backgroundColor: room.id === activeChatRoomId && "#ffffff45",
+                display: "flex",
+              }}
+            >
+              # {room.name}
+              {/* <Badge
                   style={{ float: "right", marginTop: "4px" }}
                   variant="danger"
                 >
                   {getNotificationCount(room)}
-                </Badge>
-              </li>
-            ))
-          : null}
+                </Badge> */}
+            </li>
+          ))}
       </ul>
       {/* chatRoom Modal */}
 

@@ -16,11 +16,13 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { ref, set, update } from "firebase/database";
+import { useNavigate } from "react-router-dom";
 
 function UserPanel() {
   const user = useSelector((state) => state.user.currentUser);
   const inputRef = useRef(null);
   // console.log(user);
+  const navi = useNavigate();
   const dispatch = useDispatch();
   // 로그아웃 부분도 파이어 베이스에서 처리를 해줘야 함.
   // 여기서 로그아웃 처리를 하면 App.js에서 해당 항목을 처리함. 그리고 App.js에서
@@ -28,6 +30,7 @@ function UserPanel() {
   const handleLogout = () => {
     signOut(authService);
     dispatch(clearUser());
+    navi("/login");
   };
   const changeProfile = () => {
     inputRef.current.click();
