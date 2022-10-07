@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { getDatabase, ref, push, onChildAdded, child } from "firebase/database";
 import { useDispatch, useSelector } from "react-redux";
 
-function MainPanel() {
+function MainPanel({ heart, setHeart }) {
   const chatRoom = useSelector((state) => state.chatRoom.currentChatRoom);
   const user = useSelector((state) => state.user.currentUser);
   const dataBase = getDatabase();
@@ -62,10 +62,14 @@ function MainPanel() {
     // 첫 진입시 chatRoom 이 들어오지 않음
     // chatRoom이 들어왔을 때 해당 해당 함수를 실행시켜야함.
   }, []);
-  
+
   return (
     <Container padding="2rem 2rem 0 2rem">
-      <MessageHeader handleSearchChange={handleSearchChange} />
+      <MessageHeader
+        handleSearchChange={handleSearchChange}
+        heart={heart}
+        setHeart={setHeart}
+      />
       <Container
         width={"100%"}
         height={"450px"}
