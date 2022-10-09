@@ -41,6 +41,7 @@ function Favorited({ heart, setHeart }) {
       const filteredChatRooms = chatArray.filter(
         (chatRoom) => chatRoom.id !== chatRoomToRemove.id
       );
+
       setFavorited([...filteredChatRooms]);
     });
   };
@@ -66,7 +67,8 @@ function Favorited({ heart, setHeart }) {
                   changeChatRoom(room);
                 }}
                 style={{
-                  backgroundColor: room.id === activeChatRoom && "#ffff45",
+                  backgroundColor:
+                    chatRoom.id === activeChatRoom && "#ffffff45",
                 }}
               >
                 # {room.name}

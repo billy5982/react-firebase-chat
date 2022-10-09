@@ -29,6 +29,8 @@ import { useEffect } from "react";
 export default function MessageHeader({ handleSearchChange, heart, setHeart }) {
   const chatRoom = useSelector((state) => state.chatRoom.currentChatRoom);
   const user = useSelector((state) => state.user.currentUser);
+  const userPosts = useSelector((state) => state.chatRoom);
+  console.log(userPosts);
   const userRef = ref(getDatabase(), "users");
   const isPrivateChatRoom = useSelector(
     (state) => state.chatRoom.isPrivateChatRoom
@@ -50,13 +52,14 @@ export default function MessageHeader({ handleSearchChange, heart, setHeart }) {
           name: chatRoom.name,
           description: chatRoom.description,
           createdBy: {
-            name: chatRoom.createBy.name,
-            image: chatRoom.createBy.image,
+            name: chatRoom.createdBy.name,
+            image: chatRoom.createdBy.image,
           },
         },
       });
     }
   };
+
   //새로고침을 해도 유저가 보이게 하기
   const addFavoriteListener = (chatRoomId, userId) => {
     // 해당 유저의 favorited 안에 체크한 항목이 여기서 data.val()에 속한다.
@@ -83,7 +86,7 @@ export default function MessageHeader({ handleSearchChange, heart, setHeart }) {
     <>
       <Con
         width="100%"
-        height={"170px"}
+        height={"200px"}
         border={".2rem solid #ececec"}
         borderR={"4px"}
         padding="1rem"
@@ -124,19 +127,24 @@ export default function MessageHeader({ handleSearchChange, heart, setHeart }) {
               </InputGroup>
             </Col>
           </Row>
-          <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            <p>
-              <Image src={`${user.photoURL}`} style={{ width: "30px" }} />
-              {user.displayName}
-            </p>
-          </div>
+          {!isPrivateChatRoom && (
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <p>
+                <Image
+                  src={`${chatRoom && chatRoom.createdBy.image}`}
+                  style={{ width: "30px" }}
+                />
+                {chatRoom && chatRoom.createdBy.name}
+              </p>
+            </div>
+          )}
           <Row>
             <Col>
               <Accordion>
                 <Accordion.Item eventKey="0">
                   <Accordion.Header>Description</Accordion.Header>
                   <Accordion.Collapse eventKey="0">
-                    <Card.Body>123</Card.Body>
+                    <Card.Body>{chatRoom.description}</Card.Body>
                   </Accordion.Collapse>
                 </Accordion.Item>
               </Accordion>
@@ -144,7 +152,7 @@ export default function MessageHeader({ handleSearchChange, heart, setHeart }) {
             <Col>
               <Accordion>
                 <Accordion.Item eventKey="0">
-                  <Accordion.Header>Description</Accordion.Header>
+                  <Accordion.Header>Post Count</Accordion.Header>
                   <Accordion.Collapse eventKey="0">
                     <Card.Body>123</Card.Body>
                   </Accordion.Collapse>

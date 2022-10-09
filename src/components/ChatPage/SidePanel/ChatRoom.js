@@ -35,7 +35,9 @@ const ChatRoomUIComponent = styled.div`
 function ChatRoom() {
   const [show, setShow] = useState(false);
   const user = useSelector((state) => state.user.currentUser);
-  const chatRoom = useSelector((state) => state.chatRoom.currentChatRoom);
+  const currentChatRoom = useSelector(
+    (state) => state.chatRoom.currentChatRoom
+  );
 
   const dispatch = useDispatch();
   const [chatRooms, setChatRooms] = useState([]);
@@ -87,7 +89,7 @@ function ChatRoom() {
       id: key,
       name,
       description,
-      createBy: {
+      createdBy: {
         name: user.displayName,
         image: user.photoURL,
       },
@@ -264,12 +266,6 @@ function ChatRoom() {
               }}
             >
               # {room.name}
-              {/* <Badge
-                  style={{ float: "right", marginTop: "4px" }}
-                  variant="danger"
-                >
-                  {getNotificationCount(room)}
-                </Badge> */}
             </li>
           ))}
       </ul>

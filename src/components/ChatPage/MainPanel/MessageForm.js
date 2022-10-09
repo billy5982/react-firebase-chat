@@ -13,7 +13,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 
-function MessageForm() {
+function MessageForm({ btnClick, setBtnClick }) {
   const dataBase = getDatabase();
   const messagesRef = ref(dataBase, "messages");
   const user = useSelector((state) => state.user.currentUser);
@@ -69,6 +69,7 @@ function MessageForm() {
       setLoading(false);
       setContent("");
       setErrors([]);
+      setBtnClick(!btnClick);
     } catch (error) {
       setErrors((pre) => pre.concat(error.message));
       setLoading(false);
@@ -129,6 +130,7 @@ function MessageForm() {
             );
             setLoading(false);
           });
+          setBtnClick(!btnClick);
         }
       );
     } catch (error) {}

@@ -69,7 +69,7 @@ function DirectMessage() {
                 <li
                   style={{
                     backgroundColor:
-                      chatRoom.id === activeChatRoom && "#ffff45",
+                      chatRoom.id === activeChatRoom && "#ffffff45",
                   }}
                   key={user.uid}
                   onClick={() => {

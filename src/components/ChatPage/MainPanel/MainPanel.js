@@ -5,12 +5,17 @@ import MessageHeader from "./MessageHeader";
 import React, { useEffect, useState } from "react";
 import { getDatabase, ref, push, onChildAdded, child } from "firebase/database";
 import { useDispatch, useSelector } from "react-redux";
+import { setUserPosts } from "../../../redux/actions/chatRoom_actions";
 
 function MainPanel({ heart, setHeart }) {
   const chatRoom = useSelector((state) => state.chatRoom.currentChatRoom);
   const user = useSelector((state) => state.user.currentUser);
   const dataBase = getDatabase();
+  const dispatch = useDispatch();
   const messagesRef = ref(dataBase, "messages");
+
+  //버튼을 눌러줄 때마다 state를 변경해서 해당 state가 변경되면 값을 다시 가져올 수 있도록 구현
+  const [btnClick, setBtnClick] = useState(true);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResult, setSearchResult] = useState([]);
@@ -43,15 +48,36 @@ function MainPanel({ heart, setHeart }) {
     setSearchResult([...searchResults]);
   };
 
+  // 드롭다운 유저 명과 카운터 갯수를 표현하는 함수,
+  // 로직 -> key in obj로 해당 유저가 이미 존재하면 count+1 해주고
+  // 해당 key(user name)이 없다면 count = 1, userURL , key를 등록해준다.
+  //해당 채팅방에 메세지 정보가 들어옴
+  const userPostCount = (messages) => {
+    const filter = messages.reduce((acc, message) => {
+      // 객체에 해당 키가 있는 지 확인하는 로직 in을 사용
+      if (message.user.name in acc) {
+        acc[message.user.name].count += 1; // 해당 유저가 이미 존재한다면 메세지 수 카운트
+      } else {
+        acc[message.user.name] = { image: message.user.image, count: 1 }; // 객체 키로 유저 네임, 값으로 카운트와 이미지 넣기
+      }
+      return acc;
+    }, {});
+    // 최종적으로 모은 정보를 redux 상태에 저장
+    // console.log(setUserPosts(filter));
+    dispatch(setUserPosts(filter));
+  };
+
+  // 접근한 현재 방에 메세지를 가져오는 로직 + 드롭다운에 유저 명과 카운터 갯수를 표현하는 로직의 실행구문
   const addMessagesListener = (chatRoomId) => {
-    let messagesArray = [];
+    const messagesArray = [];
     // child를 써서 message 데이터 베이스에 자식요소로 있는 chatRoomId의 변경값을
     // 확인하는 메서드 -> 여기서 변경값이란 message의 추가 여부임
     onChildAdded(child(messagesRef, chatRoomId), (data) => {
       messagesArray.push(data.val());
       // spread연산자에 무엇인가 있다...
-      setMessages([...messagesArray]);
       setMessageLoading(false);
+      setMessages(messagesArray);
+      userPostCount(messagesArray);
     });
   };
 
@@ -88,7 +114,7 @@ function MainPanel({ heart, setHeart }) {
               <Message key={msg.timestamp} message={msg} user={user}></Message>
             ))}
       </Container>
-      <MessageForm />
+      <MessageForm btnClick={btnClick} setBtnClick={setBtnClick} />
     </Container>
   );
 }
