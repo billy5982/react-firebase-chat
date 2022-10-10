@@ -2,21 +2,32 @@ import { Container } from "../../styled/Container";
 import Message from "./Message";
 import MessageForm from "./MessageForm";
 import MessageHeader from "./MessageHeader";
-import React, { useEffect, useState } from "react";
-import { getDatabase, ref, push, onChildAdded, child } from "firebase/database";
+import { useEffect, useState, useRef } from "react";
+import {
+  getDatabase,
+  ref,
+  onChildAdded,
+  child,
+  onChildRemoved,
+} from "firebase/database";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserPosts } from "../../../redux/actions/chatRoom_actions";
+import Skeleton from "../../../commons/components/Skeleton";
 
 function MainPanel({ heart, setHeart }) {
   const chatRoom = useSelector((state) => state.chatRoom.currentChatRoom);
   const user = useSelector((state) => state.user.currentUser);
+
   const dataBase = getDatabase();
-  const dispatch = useDispatch();
+  const typingRef = ref(dataBase, "typing");
   const messagesRef = ref(dataBase, "messages");
+
+  const dispatch = useDispatch();
+  const messageEnd = useRef(null);
 
   //버튼을 눌러줄 때마다 state를 변경해서 해당 state가 변경되면 값을 다시 가져올 수 있도록 구현
   const [btnClick, setBtnClick] = useState(true);
-
+  const [typingUsers, setTypingUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [searchLoading, setSearchLoading] = useState([]);
@@ -74,20 +85,57 @@ function MainPanel({ heart, setHeart }) {
     // 확인하는 메서드 -> 여기서 변경값이란 message의 추가 여부임
     onChildAdded(child(messagesRef, chatRoomId), (data) => {
       messagesArray.push(data.val());
-      // spread연산자에 무엇인가 있다...
       setMessageLoading(false);
       setMessages(messagesArray);
       userPostCount(messagesArray);
     });
   };
 
+  const addTypingListeners = (chatRoomId) => {
+    // 타이핑이 추가됐을때
+    onChildAdded(child(typingRef, chatRoomId), (data) => {
+      let typingData = [];
+      if (data.key !== user.uid) {
+        typingData.push({
+          id: data.key,
+          name: data.val(),
+        });
+        setTypingUsers([...typingData]);
+        typingData = [];
+      }
+    });
+    // 타이핑이 제거 됐을때
+    onChildRemoved(child(typingRef, chatRoomId), (data) => {
+      //지워진 데이터 => data
+
+      const index = typingUsers.findIndex((user) => user.id === data.key);
+
+      if (index !== -1) {
+        if (typingUsers.filter((user) => user.id !== data.key).length === 0) {
+          setTypingUsers([]);
+        } else {
+          setTypingUsers([
+            ...typingUsers.filter((user) => user.id !== data.key),
+          ]);
+        }
+      }
+    });
+  };
+
   useEffect(() => {
     if (chatRoom) {
       addMessagesListener(chatRoom.id);
+      addTypingListeners(chatRoom.id);
     }
     // 첫 진입시 chatRoom 이 들어오지 않음
     // chatRoom이 들어왔을 때 해당 해당 함수를 실행시켜야함.
   }, []);
+
+  useEffect(() => {
+    if (messageEnd.current) {
+      messageEnd.current.scrollIntoView({ behavior: "smooth" });
+    }
+  });
 
   return (
     <Container padding="2rem 2rem 0 2rem">
@@ -105,6 +153,9 @@ function MainPanel({ heart, setHeart }) {
         margin={"0 0 1rem 0"}
         overflowY={"auto"}
       >
+        {/* 스켈레톤 설정 */}
+        {messageLoading && [...Array(10)].map((x) => <Skeleton />)}
+
         {/* search 진행중이면 searchResult를 뿌려줌 */}
         {searchTerm
           ? searchResult.map((msg) => (
@@ -113,8 +164,19 @@ function MainPanel({ heart, setHeart }) {
           : messages.map((msg) => (
               <Message key={msg.timestamp} message={msg} user={user}></Message>
             ))}
+        <div ref={messageEnd}>ref</div>
+
+        {typingUsers.length > 0 &&
+          typingUsers.map((user) => {
+            return <div key={user.id}>{user.name.userUid}가 입력중입니다.</div>;
+          })}
       </Container>
-      <MessageForm btnClick={btnClick} setBtnClick={setBtnClick} />
+      {/* div 로 스크롤을 내릴 자리를 만들어주기 Ref.scrollIntoView */}
+      <MessageForm
+        btnClick={btnClick}
+        setBtnClick={setBtnClick}
+        messageEnd={messageEnd}
+      />
     </Container>
   );
 }

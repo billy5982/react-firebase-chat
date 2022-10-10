@@ -4,8 +4,16 @@ import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { useState, useRef } from "react";
-import { getDatabase, ref, set, push, child } from "firebase/database";
-import { useSelector, useDispatch } from "react-redux";
+import {
+  getDatabase,
+  ref,
+  set,
+  push,
+  child,
+  update,
+  remove,
+} from "firebase/database";
+import { useSelector } from "react-redux";
 import {
   getStorage,
   ref as strRef,
@@ -13,9 +21,10 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 
-function MessageForm({ btnClick, setBtnClick }) {
+function MessageForm({ btnClick, setBtnClick, messageEnd }) {
   const dataBase = getDatabase();
   const messagesRef = ref(dataBase, "messages");
+
   const user = useSelector((state) => state.user.currentUser);
   const chatRoom = useSelector((state) => state.chatRoom.currentChatRoom);
   const isPrivateChatRoom = useSelector(
@@ -79,9 +88,23 @@ function MessageForm({ btnClick, setBtnClick }) {
     }
   };
 
+  //
+  const handleKeyDown = (event) => {
+    if (event.ctrlKey && event.keyCode === 13) handleSubmit();
+    if (content) {
+      set(ref(getDatabase(), `typing/${chatRoom.id}/${user.uid}`), {
+        //update? set?
+        userUid: user.displayName,
+      });
+    } else {
+      remove(ref(getDatabase(), `typing/${chatRoom.id}/${user.uid}`));
+    }
+  };
+
   const handleOpenImageRef = () => {
     inputFileRef.current.click();
   };
+
   const getPath = () => {
     if (isPrivateChatRoom) {
       return `/message/private/${chatRoom.id}`;
@@ -143,6 +166,7 @@ function MessageForm({ btnClick, setBtnClick }) {
           <Form.Control
             onChange={handleContent}
             value={content}
+            onKeyDown={handleKeyDown}
             as="textarea"
             rows={3}
           />

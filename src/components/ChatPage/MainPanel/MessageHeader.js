@@ -21,17 +21,18 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Accordion from "react-bootstrap/Accordion";
 import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
-import { useDispatch, useSelector } from "react-redux";
+
+import { useSelector } from "react-redux";
 import { useState } from "react";
 import { useEffect } from "react";
 
 export default function MessageHeader({ handleSearchChange, heart, setHeart }) {
   const chatRoom = useSelector((state) => state.chatRoom.currentChatRoom);
   const user = useSelector((state) => state.user.currentUser);
-  const userPosts = useSelector((state) => state.chatRoom);
-  console.log(userPosts);
+  const userPosts = useSelector((state) => state.chatRoom.userPosts);
+
   const userRef = ref(getDatabase(), "users");
+
   const isPrivateChatRoom = useSelector(
     (state) => state.chatRoom.isPrivateChatRoom
   );
@@ -82,6 +83,29 @@ export default function MessageHeader({ handleSearchChange, heart, setHeart }) {
     }
   }, []);
 
+  const renderUserPost = (userPosts) => {
+    return Object.entries(userPosts)
+      .sort((a, b) => b[1].count - a[1].count)
+      .map(([key, val], i) => {
+        return (
+          <div key={i} style={{ display: "flex" }}>
+            <img
+              src={val.image}
+              alt=""
+              style={{ borderRadius: 25 }}
+              width={48}
+              height={48}
+              className="mr-3"
+              alt={val.name}
+            />
+            <div>
+              <h6>{key}</h6>
+              <p>{val.count} 개</p>
+            </div>
+          </div>
+        );
+      });
+  };
   return (
     <>
       <Con
@@ -154,7 +178,9 @@ export default function MessageHeader({ handleSearchChange, heart, setHeart }) {
                 <Accordion.Item eventKey="0">
                   <Accordion.Header>Post Count</Accordion.Header>
                   <Accordion.Collapse eventKey="0">
-                    <Card.Body>123</Card.Body>
+                    <Card.Body>
+                      {userPosts && renderUserPost(userPosts)}
+                    </Card.Body>
                   </Accordion.Collapse>
                 </Accordion.Item>
               </Accordion>

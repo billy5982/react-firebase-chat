@@ -21,11 +21,11 @@ function Favorited({ heart, setHeart }) {
   const userRef = ref(getDatabase(), `users`);
   const dispatch = useDispatch();
 
-  const changeChatRoom = (chatRoom) => {
-    dispatch(setCurrentChatRoom(chatRoom));
+  const changeChatRoom = (Room) => {
+    dispatch(setCurrentChatRoom(Room));
     dispatch(setPrivateChatRoom(false));
     // 클릭한 room의 아이디로
-    setActiveChatRoomId(chatRoom.id);
+    setActiveChatRoomId(Room.id);
   };
 
   const addListeners = (userId) => {
@@ -67,8 +67,7 @@ function Favorited({ heart, setHeart }) {
                   changeChatRoom(room);
                 }}
                 style={{
-                  backgroundColor:
-                    chatRoom.id === activeChatRoom && "#ffffff45",
+                  backgroundColor: room.id === activeChatRoom && "#ffffff45",
                 }}
               >
                 # {room.name}
