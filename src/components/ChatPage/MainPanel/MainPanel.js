@@ -86,37 +86,47 @@ function MainPanel({ heart, setHeart }) {
     onChildAdded(child(messagesRef, chatRoomId), (data) => {
       messagesArray.push(data.val());
       setMessageLoading(false);
-      setMessages(messagesArray);
+      setMessages([...messagesArray]);
       userPostCount(messagesArray);
     });
   };
 
   const addTypingListeners = (chatRoomId) => {
     // 타이핑이 추가됐을때
+    let typingData = [];
     onChildAdded(child(typingRef, chatRoomId), (data) => {
-      let typingData = [];
       if (data.key !== user.uid) {
-        typingData.push({
+        let obj = {
           id: data.key,
           name: data.val(),
-        });
+        };
+        if (typingData.length === 0) {
+          typingData.push(obj);
+        } else {
+          let idx = typingData.findIndex((x) => x.id === obj.id);
+          if (idx === -1) {
+            // 해당 데이터가 존재하지 않는다면 데이터를 푸쉬해줌
+            typingData.push(obj);
+          }
+        }
         setTypingUsers([...typingData]);
-        typingData = [];
       }
     });
     // 타이핑이 제거 됐을때
     onChildRemoved(child(typingRef, chatRoomId), (data) => {
       //지워진 데이터 => data
-
-      const index = typingUsers.findIndex((user) => user.id === data.key);
+      const index = typingData.findIndex((user) => user.id === data.key);
 
       if (index !== -1) {
-        if (typingUsers.filter((user) => user.id !== data.key).length === 0) {
+        if (typingData.filter((user) => user.id !== data.key).length === 0) {
           setTypingUsers([]);
+          typingData = [];
+          console.log(typingData);
         } else {
-          setTypingUsers([
-            ...typingUsers.filter((user) => user.id !== data.key),
-          ]);
+          let arr = typingData.filter((user) => user.id !== data.key);
+          setTypingUsers([...arr]);
+          typingData = [...arr];
+          console.log(typingData);
         }
       }
     });
