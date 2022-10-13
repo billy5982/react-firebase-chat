@@ -215,5 +215,8 @@ let downloadUrl = await getDownloadURL(uploadTask.ref);
 
 데이터 베이스 구조(파이어 베이스)  
 ![데이터 베이스 구조](https://user-images.githubusercontent.com/104412610/195376451-e40d4c72-9c85-4aca-a279-b5e3aeadce2e.png)
+![image](https://user-images.githubusercontent.com/104412610/195581134-630a4ba8-e4f3-4b2f-8a55-c660ba4c8d09.png)
+![image](https://user-images.githubusercontent.com/104412610/195581181-a347b8e6-3049-4835-a45b-7a647613c481.png)
+
 리덕스 구조  
 ![리덕스 구조](https://user-images.githubusercontent.com/104412610/195377507-9adbf27f-adb5-491e-9fc3-617ed9c660ee.png)
