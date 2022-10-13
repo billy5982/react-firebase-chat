@@ -119,13 +119,13 @@ let downloadUrl = await getDownloadURL(uploadTask.ref);
 
 - 유저 정보가 존재하면? ChatPage로 이동
 - 유저 정보가 존재하지 않다면? LoginPage로 이동
-- onAuthStateChanged(auth서버, (인자에 유저 정보가 담김)=>{})를 이용하여 유저 정보 확인 => 유저정보 존재한다면, 현재 리덕스에 해당 유저정보 저장(dispatch)
+- `onAuthStateChanged(auth서버, (인자에 유저 정보가 담김)=>{})`를 이용하여 유저 정보 확인 => 유저정보 존재한다면, 현재 리덕스에 해당 유저정보 저장(dispatch)
 
 #### LoginPage
 
 - react-hook-form 이용(회원가입 로직 참고)
 - 로그인 하면 폼데이터를 전달받아 Auth 서버로 전달 -> 완료되면 App.js로 다시 이동
-- signInWithEmailAndPassword(auth서버,입력폼 이메일,비밀번호) => try catch 이용 로그인 정보가 없으면 catch를 사용
+- `signInWithEmailAndPassword(auth서버,입력폼 이메일,비밀번호)` => try catch 이용 로그인 정보가 없으면 catch를 사용
 - Link를 이용해서 회원가입으로 이동 가능
 
 #### Register
@@ -138,9 +138,9 @@ let downloadUrl = await getDownloadURL(uploadTask.ref);
   - 태그 바깥에서 `{errors.password && errors.password.type === "required" && (
       <p>This password field is required</p>
     )}`을 통해 유효성 검사 가능
-- 폼에 모든 정보를 종합하여 createUserWithEmailAndPassword를 이용해서
+- 폼에 모든 정보를 종합하여 `createUserWithEmailAndPassword`를 이용해서
   회원 정보를 제작 -> 해당 함수를 선언 시 변수에 할당해주면 현재 제작된 유저 정보가 변수에 할당
-- updateProfile(auth서버.currentUser,{수정할 정보})을 이용하면 현재 유저 정보를 수정할 수 있음 -> 수정할 정보를 객체와 키 형태로 작성
+- `updateProfile(auth서버.currentUser,{수정할 정보})`을 이용하면 현재 유저 정보를 수정할 수 있음 -> 수정할 정보를 객체와 키 형태로 작성
 - 나중에 다이렉트 메세지 구현을 위해 데이터베이스 user에다 auth.currentUser를 이용하여 데이터 베이스에 유저의 이름과 imageURL 만 뽑아내서 저장 가능(createdUser 은 회원가입 함수를 실행하고 할당한 변수)
   - photoURL 로직 => md5 라이브러리를 이용
   ```js
@@ -180,7 +180,7 @@ let downloadUrl = await getDownloadURL(uploadTask.ref);
 
 - 리덕스에 현재 저장된 정보를 이용해서 해당 방에 message 데이터 베이스에 접근
 - 메세지를 보내면 콘텐츠인지 img인지 확인해야하는 로직 필요 콘텐츠면 set()을 이용한 메세지 데이터 객체 추가, 이미지는 url로 저장
-- 이미지를 스토리지에 올리는 메소드 uploadBytesReSumable(ref(스토리지,filepath),file,metadata) 순
+- 이미지를 스토리지에 올리는 메소드 `uploadBytesReSumable(ref(스토리지,filepath),file,metadata)` 순
 - 위 uploadBytesReSumable를 변수에 할당하면 on메소드 사용 가능. uploadTask.on("감지이벤트 state_changed",진행율 확인 콜백 함수(snapshot)=>{`snapshot.bytesTransferred로 업로드 진행상황 체크 가능`, / `snapshot.totalBytes으로 토탈 용량 확인 가능`},실패했을 경우 콜백함수,완료가 되었을 때 실행될 함수 `getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl)`)
 
 ## SidePanel
